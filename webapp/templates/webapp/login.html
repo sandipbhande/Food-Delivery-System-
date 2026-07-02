@@ -1,0 +1,17 @@
+{% extends "webapp/base.html" %}
+{% block title %}Log in — Second Plate{% endblock %}
+{% block content %}
+  <h1 class="page-title">Log in</h1>
+  <form method="post" style="max-width:380px;">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="field-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p style="color:var(--tomato); font-size:0.8rem;">{{ field.errors|striptags }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <button class="btn primary" type="submit">Log in</button>
+  </form>
+  <p style="margin-top:16px; font-size:0.9rem;">New here? <a href="{% url 'webapp:register' %}" style="text-decoration:underline;">Create an account</a></p>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "webapp/base.html" %}
+{% block title %}Your cart — Second Plate{% endblock %}
+{% block content %}
+  <h1 class="page-title">Your cart</h1>
+
+  {% if items %}
+    <div class="ticket" style="max-width:480px; margin:24px auto;">
+      <div class="ticket-body">
+        <p class="mono" style="color:var(--ink-soft); font-size:0.8rem; margin-top:0;">{{ items|length }} ITEM{{ items|length|pluralize }}</p>
+        {% for item in items %}
+          <div class="dashed-row">
+            <span>
+              {{ item.menu_item.name }}
+              <form method="post" action="{% url 'webapp:update_cart_item' item.menu_item.id %}" style="display:inline; margin-left:8px;">
+                {% csrf_token %}
+                <input class="mono" type="number" name="quantity" value="{{ item.quantity }}" min="0" style="width:48px; border:1px solid var(--sand); border-radius:3px; text-align:center;">
+                <button class="btn small outline" type="submit">Update</button>
+              </form>
+              <form method="post" action="{% url 'webapp:remove_from_cart' item.menu_item.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button class="btn small outline" type="submit" style="color:var(--tomato); border-color:var(--tomato);">Remove</button>
+              </form>
+            </span>
+            <span class="price">₹{{ item.subtotal }}</span>
+          </div>
+        {% endfor %}
+        <div class="dashed-row"><span>Subtotal</span><span class="price">₹{{ subtotal }}</span></div>
+        <div class="dashed-row"><span>Delivery fee</span><span class="price">₹{{ delivery_fee }}</span></div>
+        <div class="dashed-row" style="font-weight:700; font-size:1.05rem;"><span>Total</span><span class="price">₹{{ total }}</span></div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:24px;">
+      <a class="btn primary" href="{% url 'webapp:checkout' %}">Proceed to checkout</a>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>Your cart is empty.</p>
+      <a class="btn" href="{% url 'webapp:home' %}">Browse restaurants</a>
+    </div>
+  {% endif %}
+{% endblock %}

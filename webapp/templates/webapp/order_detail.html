@@ -1,0 +1,53 @@
+{% extends "webapp/base.html" %}
+{% block title %}Order #{{ order.id }} — Second Plate{% endblock %}
+{% block content %}
+  <h1 class="page-title">Order #{{ order.id }}</h1>
+  <p class="page-subtitle">{{ order.restaurant.name }} · placed {{ order.created_at|date:"M d, Y H:i" }}</p>
+
+  <span class="status status-{{ order.status }}">{{ order.get_status_display }}</span>
+
+  <div class="ticket" style="max-width:480px; margin:24px 0;">
+    <div class="ticket-body">
+      {% for item in order.items.all %}
+        <div class="dashed-row">
+          <span>{{ item.quantity }} × {{ item.menu_item.name }}</span>
+          <span class="price">₹{{ item.subtotal }}</span>
+        </div>
+      {% endfor %}
+      <div class="dashed-row"><span>Subtotal</span><span class="price">₹{{ order.subtotal }}</span></div>
+      <div class="dashed-row"><span>Delivery fee</span><span class="price">₹{{ order.delivery_fee }}</span></div>
+      <div class="dashed-row" style="font-weight:700;"><span>Total</span><span class="price">₹{{ order.total_amount }}</span></div>
+    </div>
+  </div>
+
+  <p><strong>Deliver to:</strong> {{ order.delivery_address.street }}, {{ order.delivery_address.city }}</p>
+  {% if delivery and delivery.agent %}
+    <p><strong>Delivery agent:</strong> {{ delivery.agent.user.username }}</p>
+  {% endif %}
+
+  {% if order.status != 'out_for_delivery' and order.status != 'delivered' and order.status != 'cancelled' %}
+    <form method="post" action="{% url 'webapp:cancel_order' order.id %}">
+      {% csrf_token %}
+      <button class="btn outline" type="submit" style="color:var(--tomato); border-color:var(--tomato);">Cancel order</button>
+    </form>
+  {% endif %}
+
+  {% if order.status == 'delivered' %}
+    {% if review %}
+      <div class="menu-category">
+        <h2>Your review</h2>
+        <p>★ {{ review.rating }} — {{ review.comment }}</p>
+      </div>
+    {% elif review_form %}
+      <div class="menu-category">
+        <h2>Rate this order</h2>
+        <form method="post">
+          {% csrf_token %}
+          <div class="field-group"><label>Rating (1-5)</label>{{ review_form.rating }}</div>
+          <div class="field-group"><label>Comment</label>{{ review_form.comment }}</div>
+          <button class="btn primary" type="submit">Submit review</button>
+        </form>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endblock %}

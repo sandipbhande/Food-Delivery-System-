@@ -1,0 +1,16 @@
+{% extends "webapp/base.html" %}
+{% block title %}Add address — Second Plate{% endblock %}
+{% block content %}
+  <h1 class="page-title">Add a delivery address</h1>
+  <form method="post" style="max-width:420px;">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="field-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p style="color:var(--tomato); font-size:0.8rem;">{{ field.errors|striptags }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <button class="btn primary" type="submit">Save address</button>
+  </form>
+{% endblock %}

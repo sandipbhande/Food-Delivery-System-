@@ -1,0 +1,28 @@
+{% extends "webapp/base.html" %}
+{% block title %}My orders — Second Plate{% endblock %}
+{% block content %}
+  <h1 class="page-title">My orders</h1>
+
+  {% if orders %}
+    <table class="plain">
+      <thead><tr><th>Order</th><th>Restaurant</th><th>Status</th><th>Total</th><th>Placed</th><th></th></tr></thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td class="mono">#{{ order.id }}</td>
+            <td>{{ order.restaurant.name }}</td>
+            <td><span class="status status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+            <td class="mono">₹{{ order.total_amount }}</td>
+            <td>{{ order.created_at|date:"M d, Y" }}</td>
+            <td><a class="btn small outline" href="{% url 'webapp:order_detail' order.id %}">View</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-state">
+      <p>You haven't placed any orders yet.</p>
+      <a class="btn" href="{% url 'webapp:home' %}">Browse restaurants</a>
+    </div>
+  {% endif %}
+{% endblock %}

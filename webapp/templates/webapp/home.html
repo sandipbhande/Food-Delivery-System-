@@ -1,0 +1,35 @@
+{% extends "webapp/base.html" %}
+{% block title %}Second Plate — Order food online{% endblock %}
+{% block content %}
+  <h1 class="page-title">What are we eating today?</h1>
+  <p class="page-subtitle">Browse restaurants near you and get it delivered.</p>
+
+  <form class="search-bar" method="get">
+    <input class="field-input" type="text" name="q" placeholder="Search restaurants or cuisine..." value="{{ query }}">
+    <input class="field-input" style="max-width:200px" type="text" name="city" placeholder="City" value="{{ city }}">
+    <button class="btn" type="submit">Search</button>
+  </form>
+
+  {% if restaurants %}
+    <div class="restaurant-grid">
+      {% for r in restaurants %}
+        <a class="r-card" href="{% url 'webapp:restaurant_detail' r.pk %}">
+          <div class="r-card-img">
+            {% if r.logo %}<img src="{{ r.logo.url }}" alt="{{ r.name }}">{% else %}<span class="display" style="font-size:1.6rem;color:var(--ink-soft)">{{ r.name|slice:":1" }}</span>{% endif %}
+          </div>
+          <div class="r-card-body">
+            <h3>{{ r.name }}</h3>
+            <div class="r-meta">
+              <span>{{ r.cuisine_type|default:"Multi-cuisine" }} · {{ r.city }}</span>
+              {% if r.average_rating > 0 %}<span class="rating-badge">★ {{ r.average_rating }}</span>{% endif %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>No restaurants match your search yet.</p>
+    </div>
+  {% endif %}
+{% endblock %}

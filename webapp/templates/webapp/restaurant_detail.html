@@ -1,0 +1,71 @@
+{% extends "webapp/base.html" %}
+{% block title %}{{ restaurant.name }} — Second Plate{% endblock %}
+{% block content %}
+  <div class="r-hero">
+    <h1>{{ restaurant.name }}</h1>
+    <div class="tags">{{ restaurant.cuisine_type|default:"Multi-cuisine" }} · {{ restaurant.city }}
+      {% if restaurant.average_rating > 0 %} · ★ {{ restaurant.average_rating }}{% endif %}
+    </div>
+  </div>
+
+  {% for category in categories %}
+    {% if category.items.all %}
+      <div class="menu-category">
+        <h2>{{ category.name }}</h2>
+        {% for item in category.items.all %}
+          {% if item.is_available %}
+            <div class="menu-item">
+              <div class="mi-info">
+                <h4>{% if item.is_vegetarian %}<span class="veg-dot"></span>{% endif %}{{ item.name }}</h4>
+                {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+              </div>
+              <div style="display:flex; align-items:center; gap:14px;">
+                <span class="mi-price">₹{{ item.price }}</span>
+                <form method="post" action="{% url 'webapp:add_to_cart' item.id %}">
+                  {% csrf_token %}
+                  <button class="btn small" type="submit">Add</button>
+                </form>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endfor %}
+
+  {% if uncategorized %}
+    <div class="menu-category">
+      <h2>More items</h2>
+      {% for item in uncategorized %}
+        <div class="menu-item">
+          <div class="mi-info">
+            <h4>{% if item.is_vegetarian %}<span class="veg-dot"></span>{% endif %}{{ item.name }}</h4>
+            {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+          </div>
+          <div style="display:flex; align-items:center; gap:14px;">
+            <span class="mi-price">₹{{ item.price }}</span>
+            <form method="post" action="{% url 'webapp:add_to_cart' item.id %}">
+              {% csrf_token %}
+              <button class="btn small" type="submit">Add</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if not categories and not uncategorized %}
+    <div class="empty-state"><p>This restaurant hasn't added a menu yet.</p></div>
+  {% endif %}
+
+  <div class="menu-category">
+    <h2>Reviews</h2>
+    {% for review in reviews %}
+      <div class="dashed-row">
+        <span>★ {{ review.rating }} — {{ review.customer.username }}{% if review.comment %}: {{ review.comment }}{% endif %}</span>
+      </div>
+    {% empty %}
+      <p style="color:var(--ink-soft)">No reviews yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "webapp/base.html" %}
+{% block title %}Order placed — Second Plate{% endblock %}
+{% block content %}
+  <div class="ticket" style="max-width:440px; margin:40px auto;">
+    <div class="ticket-body" style="text-align:center;">
+      <p class="mono" style="color:var(--green); font-weight:600;">ORDER CONFIRMED</p>
+      <h2 style="margin-top:0;">Thanks, {{ order.customer.first_name|default:order.customer.username }}!</h2>
+      <p style="color:var(--ink-soft);">Your order from <strong>{{ order.restaurant.name }}</strong> has been placed.</p>
+      <div class="dashed-row"><span>Order</span><span class="mono">#{{ order.id }}</span></div>
+      <div class="dashed-row"><span>Total</span><span class="price">₹{{ order.total_amount }}</span></div>
+      <div class="dashed-row"><span>Status</span><span class="status status-{{ order.status }}">{{ order.get_status_display }}</span></div>
+      <a class="btn primary" style="margin-top:20px;" href="{% url 'webapp:order_detail' order.id %}">Track order</a>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "webapp/base.html" %}
+{% block title %}Kitchen view — Second Plate{% endblock %}
+{% block content %}
+  <h1 class="page-title">Incoming orders</h1>
+
+  {% if orders %}
+    <table class="plain">
+      <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th></tr></thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td class="mono">#{{ order.id }}</td>
+            <td>{{ order.customer.username }}</td>
+            <td>{{ order.items.count }}</td>
+            <td class="mono">₹{{ order.total_amount }}</td>
+            <td><span class="status status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+            <td>
+              <form method="post" action="{% url 'webapp:owner_update_status' order.id %}" style="display:flex; gap:6px;">
+                {% csrf_token %}
+                <select name="status" class="field-input" style="width:auto; padding:6px 8px;">
+                  <option value="confirmed">Confirmed</option>
+                  <option value="preparing">Preparing</option>
+                  <option value="out_for_delivery">Out for delivery</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+                <button class="btn small" type="submit">Update</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-state"><p>No orders yet.</p></div>
+  {% endif %}
+{% endblock %}
